@@ -58,8 +58,42 @@ function calculateTicketPrice({
   isEvening,
   hasStudentCard,
 }) {
+
+
+
+let price = basePrice; 
   // Напишите решение здесь.
-  return undefined;
+  if (attractionType == "детский") {
+    if (age < 0 || height < 80) {
+      return null;
+    }
+  }
+  if (attractionType == "семейный") {
+    if (age < 8 || height < 120) {
+      return null;
+    }
+  }
+  if (attractionType == "экстремальный") {
+    if (age < 16 || height < 150) {
+      return null;
+    }
+  }
+  if (isWeekend == true) {
+    price += (basePrice / 100) * 20;
+  }
+  if (isEvening == true) {
+    price += (basePrice / 100) * 10;
+  }
+  if (hasStudentCard == true) {
+    price -= (price / 100) * 15;
+  }
+  if (age < 12) {
+    price -= price * 0.5;
+  }
+
+
+ return  Math.round(price * 100) / 100;
+
 }
 
 // ==================== ТЕСТЫ: НЕ ИЗМЕНЯТЬ ====================
@@ -70,9 +104,10 @@ let passed = 0;
 let failed = 0;
 
 function runTest(input, expected) {
-  const name = `${input.attractionType}, возраст ${input.age}, рост ${input.height} см, `
-    + `цена ${input.basePrice}, выходной=${input.isWeekend}, `
-    + `вечер=${input.isEvening}, студент=${input.hasStudentCard}`;
+  const name =
+    `${input.attractionType}, возраст ${input.age}, рост ${input.height} см, ` +
+    `цена ${input.basePrice}, выходной=${input.isWeekend}, ` +
+    `вечер=${input.isEvening}, студент=${input.hasStudentCard}`;
 
   try {
     const actual = calculateTicketPrice(input);
@@ -98,17 +133,47 @@ function runTest(input, expected) {
 //  будний вечер, будний вечер + студент,
 //  выходной день, выходной день + студент,
 //  выходной вечер, выходной вечер + студент].
-function checkAllOptions(attractionType, age, height, expected, basePrice = 500) {
+function checkAllOptions(
+  attractionType,
+  age,
+  height,
+  expected,
+  basePrice = 500,
+) {
   const input = { basePrice, age, height, attractionType };
 
-  runTest({ ...input, isWeekend: false, isEvening: false, hasStudentCard: false }, expected[0]);
-  runTest({ ...input, isWeekend: false, isEvening: false, hasStudentCard: true }, expected[1]);
-  runTest({ ...input, isWeekend: false, isEvening: true, hasStudentCard: false }, expected[2]);
-  runTest({ ...input, isWeekend: false, isEvening: true, hasStudentCard: true }, expected[3]);
-  runTest({ ...input, isWeekend: true, isEvening: false, hasStudentCard: false }, expected[4]);
-  runTest({ ...input, isWeekend: true, isEvening: false, hasStudentCard: true }, expected[5]);
-  runTest({ ...input, isWeekend: true, isEvening: true, hasStudentCard: false }, expected[6]);
-  runTest({ ...input, isWeekend: true, isEvening: true, hasStudentCard: true }, expected[7]);
+  runTest(
+    { ...input, isWeekend: false, isEvening: false, hasStudentCard: false },
+    expected[0],
+  );
+  runTest(
+    { ...input, isWeekend: false, isEvening: false, hasStudentCard: true },
+    expected[1],
+  );
+  runTest(
+    { ...input, isWeekend: false, isEvening: true, hasStudentCard: false },
+    expected[2],
+  );
+  runTest(
+    { ...input, isWeekend: false, isEvening: true, hasStudentCard: true },
+    expected[3],
+  );
+  runTest(
+    { ...input, isWeekend: true, isEvening: false, hasStudentCard: false },
+    expected[4],
+  );
+  runTest(
+    { ...input, isWeekend: true, isEvening: false, hasStudentCard: true },
+    expected[5],
+  );
+  runTest(
+    { ...input, isWeekend: true, isEvening: true, hasStudentCard: false },
+    expected[6],
+  );
+  runTest(
+    { ...input, isWeekend: true, isEvening: true, hasStudentCard: true },
+    expected[7],
+  );
 }
 
 // Готовые ожидаемые ответы. Здесь нет вычисления по алгоритму студента.
@@ -170,26 +235,50 @@ checkAllOptions("семейный", 18, 119.9, denied);
 checkAllOptions("экстремальный", 18, 149.9, denied);
 
 // Другие базовые цены: нельзя подставлять 500 прямо в решение.
-checkAllOptions("экстремальный", 18, 180,
-  [1000, 850, 1100, 935, 1200, 1020, 1300, 1105], 1000);
-checkAllOptions("семейный", 10, 125,
-  [500, 425, 550, 467.5, 600, 510, 650, 552.5], 1000);
+checkAllOptions(
+  "экстремальный",
+  18,
+  180,
+  [1000, 850, 1100, 935, 1200, 1020, 1300, 1105],
+  1000,
+);
+checkAllOptions(
+  "семейный",
+  10,
+  125,
+  [500, 425, 550, 467.5, 600, 510, 650, 552.5],
+  1000,
+);
 
 // Округление после всех наценок и скидок.
-checkAllOptions("семейный", 10, 125,
-  [166.5, 141.53, 183.15, 155.68, 199.8, 169.83, 216.45, 183.98], 333);
-checkAllOptions("экстремальный", 18, 180,
-  [333, 283.05, 366.3, 311.36, 399.6, 339.66, 432.9, 367.97], 333);
+checkAllOptions(
+  "семейный",
+  10,
+  125,
+  [166.5, 141.53, 183.15, 155.68, 199.8, 169.83, 216.45, 183.98],
+  333,
+);
+checkAllOptions(
+  "экстремальный",
+  18,
+  180,
+  [333, 283.05, 366.3, 311.36, 399.6, 339.66, 432.9, 367.97],
+  333,
+);
 
 // Бесплатный билет: результат 0, если допуск есть, иначе null.
 checkAllOptions("детский", 10, 100, [0, 0, 0, 0, 0, 0, 0, 0], 0);
 checkAllOptions("семейный", 7, 180, denied, 0);
 checkAllOptions("экстремальный", 18, 149, denied, 0);
 
-console.log(`\nВсего: ${passed + failed}. Пройдено: ${passed}. Провалено: ${failed}.`);
+console.log(
+  `\nВсего: ${passed + failed}. Пройдено: ${passed}. Провалено: ${failed}.`,
+);
 
 if (failed > 0) {
-  console.log("Исправьте calculateTicketPrice и снова запустите: node index.js\n");
+  console.log(
+    "Исправьте calculateTicketPrice и снова запустите: node index.js\n",
+  );
   process.exitCode = 1;
 } else {
   console.log("Все тесты пройдены!\n");
